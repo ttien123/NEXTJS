@@ -165,7 +165,7 @@ const http = {
   },
   post<Response>(
     url: string,
-    body: any,aaaaa
+    body: any,
     options?: Omit<CustomOptions, 'body'> | undefined
   ) {
     return request<Response>('POST', url, { ...options, body })
