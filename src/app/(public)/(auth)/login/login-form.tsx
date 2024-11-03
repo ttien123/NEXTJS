@@ -8,7 +8,6 @@ import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { LoginBody, LoginBodyType } from '@/schemaValidations/auth.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLoginMutation } from '@/queries/useAuth'
-import { Toast } from '@/components/ui/toast'
 import { toast } from '@/hooks/use-toast'
 import { handleErrorApi } from '@/lib/utils'
 

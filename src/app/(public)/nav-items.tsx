@@ -1,6 +1,7 @@
 'use client'
-
+import { getAccessTokenFromLS } from '@/lib/utils'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 const menuItems = [
   {
@@ -9,7 +10,8 @@ const menuItems = [
   },
   {
     title: 'Đơn hàng',
-    href: '/orders'
+    href: '/orders',
+    authRequired: true
   },
   {
     title: 'Đăng nhập',
@@ -24,11 +26,19 @@ const menuItems = [
 ]
 
 export default function NavItems({ className }: { className?: string }) {
+  const [isAuth, setIsAuth] = useState(false)
+  useEffect(() => {
+    setIsAuth(Boolean(getAccessTokenFromLS()))
+  }, [])
   return menuItems.map((item) => {
-    return (
-      <Link href={item.href} key={item.href} className={className}>
-        {item.title}
-      </Link>
-    )
+    if ((item.authRequired === false && isAuth) || (item.authRequired === true && !isAuth)) {
+      return null
+    } else {
+      return (
+        <Link href={item.href} key={item.href} className={className}>
+          {item.title}
+        </Link>
+      )
+    }
   })
 }
