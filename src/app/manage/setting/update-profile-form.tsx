@@ -10,13 +10,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useAccountProfile } from '@/queries/useAccount'
+import { useAccountMe, useUpdateMeMutation } from '@/queries/useAccount'
+import { useUploadMediaMutation } from '@/queries/useMedia'
+import { handleErrorApi } from '@/lib/utils'
+import { toast } from '@/hooks/use-toast'
 
 export default function UpdateProfileForm() {
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const [file, setFile] = useState<File | null>(null)
-  const { data } = useAccountProfile()
-
+  const { data, refetch } = useAccountMe()
+  const updateMeMutation = useUpdateMeMutation()
+  const uploadMediaMutation = useUploadMediaMutation()
   const form = useForm<UpdateMeBodyType>({
     resolver: zodResolver(UpdateMeBody),
     defaultValues: {
@@ -45,9 +49,43 @@ export default function UpdateProfileForm() {
     }
   },[form, data])
 
+  const reset = () => {
+    form.reset()
+    setFile(null)
+  }
+
+  const onSubmit = async (value: UpdateMeBodyType) => {
+    if (updateMeMutation.isPending) {
+      return
+    }
+    try {
+      let body = value
+      if (file) {
+        const formData = new FormData()
+        formData.append('file', file)
+        const uploadImageResult = await uploadMediaMutation.mutateAsync(formData)
+        const imageUrl = uploadImageResult.payload.data
+        body = {
+          ...value,
+          avatar: imageUrl
+        }
+      }
+      const result = await updateMeMutation.mutateAsync(body)
+      toast({
+        description: result.payload.message
+      })
+      refetch()
+    } catch (error) {
+      handleErrorApi({
+        error,
+        setError: form.setError
+      })
+    }
+  }
+
   return (
     <Form {...form}>
-      <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8'>
+      <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8' onReset={reset} onSubmit={form.handleSubmit(onSubmit)}>
         <Card x-chunk='dashboard-07-chunk-0'>
           <CardHeader>
             <CardTitle>Thông tin cá nhân</CardTitle>
@@ -68,6 +106,7 @@ export default function UpdateProfileForm() {
                         const file = e.target.files?.[0]
                         if (file) {
                           setFile(file)
+                          field.onChange('http://localhost:3000/' + field.name)
                         }
                       }}/>
                       <button
