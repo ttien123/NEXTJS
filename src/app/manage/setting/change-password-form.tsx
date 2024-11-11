@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { useChangePasswordMutation } from '@/queries/useAccount'
 import { toast } from '@/hooks/use-toast'
-import { handleErrorApi } from '@/lib/utils'
+import { handleErrorApi, setAccessTokenToLS, setRefreshTokenToLS,  } from '@/lib/utils'
 
 export default function ChangePasswordForm() {
   const changePasswordMutation = useChangePasswordMutation()
@@ -29,6 +29,8 @@ export default function ChangePasswordForm() {
     }
     try {
       const result = await changePasswordMutation.mutateAsync(data)
+      setAccessTokenToLS(result.payload.data.accessToken)
+      setRefreshTokenToLS(result.payload.data.refreshToken)
       toast({
         description: result.payload.message
       })
