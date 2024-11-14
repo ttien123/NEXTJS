@@ -25,7 +25,7 @@ const LogoutPage = () => {
             })
             router.push('/login')
         })
-    }, [mutateAsync, router])
+    }, [mutateAsync, router, accessTokenFromUrl, refreshTokenFromUrl])
     
     return (
         <div>
