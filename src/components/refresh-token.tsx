@@ -1,6 +1,6 @@
 'use client';
 import { checkAndRefreshToken, getAccessTokenFromLS, getRefreshTokenFromLS, setAccessTokenToLS, setRefreshTokenToLS } from '@/lib/utils';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import jwt from "jsonwebtoken";
 import authApiRequest from '@/apiRequests/auth';
@@ -8,6 +8,7 @@ import authApiRequest from '@/apiRequests/auth';
 const UNAUTHENTICATED_PATH = ['/login', '/logout', '/refresh-token'];
 const RefreshToken = () => {
     const pathname = usePathname();
+    const router = useRouter();
     useEffect(() => {
         if (UNAUTHENTICATED_PATH.includes(pathname)) {
             return
@@ -16,15 +17,19 @@ const RefreshToken = () => {
         
         checkAndRefreshToken({ onError: () => {
             clearInterval(interval)
-        } })
+            router.push('/login')
+        }})
 
         const TIMEOUT = 1000
-        interval = setInterval(checkAndRefreshToken, TIMEOUT)
+        interval = setInterval(() =>checkAndRefreshToken({ onError: () => {
+            clearInterval(interval)
+            router.push('/login')
+        }}), TIMEOUT)
 
         return () => {
             clearInterval(interval)
         }
-    }, [pathname])
+    }, [pathname, router])
   return (
     null
   );
