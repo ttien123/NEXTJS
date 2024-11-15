@@ -1,7 +1,7 @@
 'use client';
-import { getAccessTokenFromLS, getRefreshTokenFromLS, setAccessTokenToLS, setRefreshTokenToLS } from '@/lib/utils';
+import { checkAndRefreshToken, getAccessTokenFromLS, getRefreshTokenFromLS, setAccessTokenToLS, setRefreshTokenToLS } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import jwt from "jsonwebtoken";
 import authApiRequest from '@/apiRequests/auth';
 
@@ -13,29 +13,10 @@ const RefreshToken = () => {
             return
         }
         let interval: any = null;
-        const checkAndRefreshToken = async () => {
-            const accessToken = getAccessTokenFromLS()
-            const refreshToken = getRefreshTokenFromLS()
-            if (!accessToken || !refreshToken) {
-                return
-            }
-            const decodeAccessToken = jwt.decode(accessToken) as { exp: number, iat: number };
-            const decodeRefreshToken = jwt.decode(refreshToken) as { exp: number, iat: number };
-            const now = Math.round(new Date().getTime() / 1000)
-            if(decodeRefreshToken.exp <= now) {
-                return
-            }
-            if (decodeAccessToken.exp - now < (decodeAccessToken.exp - decodeAccessToken.iat) / 3) {
-                try {
-                    const res = await authApiRequest.refreshToken()
-                    setAccessTokenToLS(res.payload.data.accessToken)
-                    setRefreshTokenToLS(res.payload.data.refreshToken)
-                } catch (error) {
-                    clearInterval(interval)
-                }
-            }
-        }
-        checkAndRefreshToken()
+        
+        checkAndRefreshToken({ onError: () => {
+            clearInterval(interval)
+        } })
 
         const TIMEOUT = 1000
         interval = setInterval(checkAndRefreshToken, TIMEOUT)
