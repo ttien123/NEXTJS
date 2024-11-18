@@ -75,7 +75,7 @@ export const checkAndRefreshToken = async (param?: {onError?: () => void, onSucc
   }
   const decodeAccessToken = jwt.decode(accessToken) as { exp: number, iat: number };
   const decodeRefreshToken = jwt.decode(refreshToken) as { exp: number, iat: number };
-  const now = Math.round(new Date().getTime() / 1000)
+  const now = (new Date().getTime() / 1000) - 1
   if(decodeRefreshToken.exp <= now) {
     removeTokensFromLS()
     return param?.onError && param.onError()

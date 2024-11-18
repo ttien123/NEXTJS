@@ -1,9 +1,7 @@
 'use client';
-import { checkAndRefreshToken, getAccessTokenFromLS, getRefreshTokenFromLS, setAccessTokenToLS, setRefreshTokenToLS } from '@/lib/utils';
+import { checkAndRefreshToken } from '@/lib/utils';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import jwt from "jsonwebtoken";
-import authApiRequest from '@/apiRequests/auth';
 
 const UNAUTHENTICATED_PATH = ['/login', '/logout', '/refresh-token'];
 const RefreshToken = () => {

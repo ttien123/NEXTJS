@@ -14,6 +14,8 @@ const RefreshToken = () => {
             checkAndRefreshToken({ onSuccess: () => {
                 router.push(redirectPathname || '/')
             }})
+        }else{
+            router.push('/')
         }
        
     }, [ router, refreshTokenFromUrl, redirectPathname])

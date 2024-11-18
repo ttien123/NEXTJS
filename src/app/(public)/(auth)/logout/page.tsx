@@ -13,18 +13,21 @@ const LogoutPage = () => {
     const accessTokenFromUrl = searchParams.get('accessToken')
     const ref = useRef<any>(null)
     useEffect(() => {
-        if (ref.current || 
-            (refreshTokenFromUrl && refreshTokenFromUrl !== getRefreshTokenFromLS()) || 
-            (accessTokenFromUrl && accessTokenFromUrl !== getAccessTokenFromLS())) {
-            return
-        }
-        ref.current = mutateAsync
-        mutateAsync().then(() => {
-            setTimeout(() => {
-                ref.current = null
+        if (!ref.current &&
+            ((refreshTokenFromUrl && refreshTokenFromUrl === getRefreshTokenFromLS()) || 
+            (accessTokenFromUrl && accessTokenFromUrl === getAccessTokenFromLS()))
+        ) {
+            ref.current = mutateAsync
+            mutateAsync().then(() => {
+                setTimeout(() => {
+                    ref.current = null
+                })
+                router.push('/login')
             })
-            router.push('/login')
-        })
+        } else {
+            router.push('/')
+        }
+        
     }, [mutateAsync, router, accessTokenFromUrl, refreshTokenFromUrl])
     
     return (
