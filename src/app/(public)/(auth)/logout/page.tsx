@@ -3,10 +3,9 @@ import { useAppContext } from '@/components/app-provider';
 import { getAccessTokenFromLS, getRefreshTokenFromLS } from '@/lib/utils';
 import { useLogoutMutation } from '@/queries/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useRef } from 'react';
+import React, { Suspense, useEffect, useRef } from 'react';
 
-
-const LogoutPage = () => {
+const Logout = () => {
     const { mutateAsync } = useLogoutMutation()
     const router = useRouter()
     const {setIsAuth} = useAppContext()
@@ -31,13 +30,19 @@ const LogoutPage = () => {
             router.push('/')
         }
         
-    }, [mutateAsync, router, accessTokenFromUrl, refreshTokenFromUrl])
+    }, [mutateAsync, router, accessTokenFromUrl, refreshTokenFromUrl, setIsAuth])
     
     return (
         <div>
             Logout....
         </div>
     );
+}
+
+const LogoutPage = () => {
+    return (
+        <Suspense><Logout /></Suspense>
+    )
 }
 
 export default LogoutPage;

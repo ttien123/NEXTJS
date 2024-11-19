@@ -1,7 +1,7 @@
 'use client'
 import { checkAndRefreshToken, getRefreshTokenFromLS } from '@/lib/utils';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 
 const RefreshToken = () => {
@@ -26,5 +26,12 @@ const RefreshToken = () => {
         </div>
     );
 }
+const RefreshTokenPage = () => {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <RefreshToken />
+        </Suspense>
+    );
+}
 
-export default RefreshToken;
+export default RefreshTokenPage;
