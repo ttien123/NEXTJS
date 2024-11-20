@@ -48,6 +48,7 @@ export default function EditEmployee({
       changePassword: false
     }
   })
+
   const avatar = form.watch('avatar')
   const name = form.watch('name')
   const changePassword = form.watch('changePassword')
@@ -92,6 +93,7 @@ export default function EditEmployee({
       toast({
         description: result.payload.message
       })
+      reset()
       onSubmitSuccess && onSubmitSuccess()
     } catch (error) {
       handleErrorApi({
@@ -101,12 +103,17 @@ export default function EditEmployee({
     }
   }
 
+  const reset = () => {
+    setId(undefined)
+    setFile(null)
+  }
+
   return (
     <Dialog
       open={Boolean(id)}
       onOpenChange={(value) => {
         if (!value) {
-          setId(undefined)
+          reset()
         }
       }}
     >
