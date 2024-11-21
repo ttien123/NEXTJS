@@ -1,6 +1,5 @@
 import accountApiRequest from "@/apiRequests/account"
 import dishApiRequest from "@/apiRequests/dist"
-import { UpdateEmployeeAccountBodyType } from "@/schemaValidations/account.schema"
 import { UpdateDishBodyType } from "@/schemaValidations/dish.schema"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
