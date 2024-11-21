@@ -43,10 +43,10 @@ export const useUpdateDishMutation = () => {
     })
 }
 
-export const useDeleteAccountMutation = () => {
+export const useDeleteDishMutation = () => {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: accountApiRequest.deleteEmployee,
+        mutationFn: dishApiRequest.deleteDish,
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['dishes']

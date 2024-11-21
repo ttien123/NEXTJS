@@ -206,8 +206,6 @@ export default function EditDish({
                 control={form.control}
                 name='status'
                 render={({ field }) => {
-                  console.log(field);
-                  
                   return (
                   <FormItem>
                     <div className='grid grid-cols-4 items-center justify-items-start gap-4'>
