@@ -6,9 +6,10 @@ import { EntityError } from "./http"
 import { toast } from "@/hooks/use-toast"
 import jwt from "jsonwebtoken";
 import authApiRequest from "@/apiRequests/auth"
-import { DishStatus, OrderStatus, TableStatus } from "@/constants/type"
+import { DishStatus, OrderStatus, Role, TableStatus } from "@/constants/type"
 import envConfig from "@/config"
 import { TokenPayload } from "@/types/jwt.types"
+import guestApiRequest from "@/apiRequests/guest"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -76,8 +77,8 @@ export const checkAndRefreshToken = async (param?: {onError?: () => void, onSucc
   if (!accessToken || !refreshToken) {
       return
   }
-  const decodeAccessToken = jwt.decode(accessToken) as { exp: number, iat: number };
-  const decodeRefreshToken = jwt.decode(refreshToken) as { exp: number, iat: number };
+  const decodeAccessToken = decodeToken(accessToken)
+  const decodeRefreshToken = decodeToken(refreshToken)
   const now = (new Date().getTime() / 1000) - 1
   if(decodeRefreshToken.exp <= now) {
     removeTokensFromLS()
@@ -85,7 +86,8 @@ export const checkAndRefreshToken = async (param?: {onError?: () => void, onSucc
   }
   if (decodeAccessToken.exp - now < (decodeAccessToken.exp - decodeAccessToken.iat) / 3) {
       try {
-          const res = await authApiRequest.refreshToken()
+          const role = decodeRefreshToken.role
+          const res = role === Role.Guest ? await guestApiRequest.refreshToken() : await authApiRequest.refreshToken()
           setAccessTokenToLS(res.payload.data.accessToken)
           setRefreshTokenToLS(res.payload.data.refreshToken)
           param?.onSuccess && param.onSuccess()
