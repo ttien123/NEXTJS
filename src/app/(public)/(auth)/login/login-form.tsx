@@ -42,7 +42,7 @@ export default function LoginForm() {
         description: result.payload.message
       })
       setRole(result.payload.data.account.role)
-      router.push('/manage/dashboard')
+      router.push('/')
     } catch (error: any) {
       handleErrorApi({
         error,
