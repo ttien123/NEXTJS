@@ -1,9 +1,11 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { toast } from "@/hooks/use-toast";
 import socket from "@/lib/socket";
 import { formatCurrency, getVietnameseOrderStatus } from "@/lib/utils";
 import { useGuestGetOrderListQuery } from "@/queries/useGuest";
+import { UpdateOrderResType } from "@/schemaValidations/order.schema";
 import Image from "next/image";
 import { useEffect, useMemo } from "react";
 
@@ -25,7 +27,11 @@ const OrdersCart = () => {
     function onConnect() {}
 
     function onDisconnect() {}
-    function onUpdateOrder() {
+    function onUpdateOrder(data: UpdateOrderResType['data']) {
+        const { dishSnapshot: { name }, quantity } = data
+        toast({
+          description: `Món ${name} (SL: ${quantity}) vừa được cập nhật sang trạng thái "${getVietnameseOrderStatus(data.status)}"`
+        })
         refetch()
     }
 
