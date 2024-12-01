@@ -3,16 +3,20 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { useDishListQuery } from "@/queries/useDish";
-import { formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, handleErrorApi } from "@/lib/utils";
 import Quantity from "./quantity";
 import { GuestCreateOrdersBodyType } from "@/schemaValidations/guest.schema";
 import { useMemo, useState } from "react";
+import { useGuestOrderMutation } from "@/queries/useGuest";
+import { useRouter } from "next/navigation";
+import { DishStatus } from "@/constants/type";
 
 const MenuOrder = () => {
     const { data } = useDishListQuery()
     const dishes = useMemo(() => data?.payload.data ?? [], [data])
     const [orders, setOrders] = useState<GuestCreateOrdersBodyType>([]);
-
+    const { mutateAsync } = useGuestOrderMutation();
+    const router = useRouter();
     const totalPrice = useMemo(() => {
       return dishes.reduce((result, dish) => {
         const order = orders.find((order) => order.dishId === dish.id);
@@ -35,11 +39,27 @@ const MenuOrder = () => {
         return newOrders;
       })   
     }
+
+  const handleOrder = async () => {
+    try {
+      await mutateAsync(orders);
+      router.push(`/guest/orders`);
+    } catch (error) {
+      handleErrorApi({
+        error
+      })
+    }
+  }
   return (
     <>
-      {dishes.map((dish) => (
-        <div key={dish.id} className="flex gap-4">
-          <div className="flex-shrink-0">
+      {dishes.filter((dish) => dish.status !== DishStatus.Hidden).map((dish) => (
+        <div key={dish.id} className={cn("flex gap-4", {
+          'pointer-events-none opacity-50': dish.status === DishStatus.Unavailable
+        })}>
+          <div className="flex-shrink-0 relative">
+            {dish.status === DishStatus.Unavailable && <span className="absolute inset-0 flex items-center justify-center text-white">
+              {dish.status === DishStatus.Unavailable && 'Hết'}
+            </span>}
             <Image
               src={dish.image}
               alt={dish.name}
@@ -60,8 +80,8 @@ const MenuOrder = () => {
         </div>
       ))}
       <div className="sticky bottom-0">
-        <Button className="w-full justify-between">
-          <span>Giỏ hàng · {orders.length} món</span>
+        <Button className="w-full justify-between" onClick={handleOrder} disabled={orders.length === 0}>
+          <span>Đặt hàng · {orders.length} món</span>
           <span>{formatCurrency(totalPrice)}</span>
         </Button>
       </div>
