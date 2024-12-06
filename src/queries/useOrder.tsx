@@ -15,10 +15,10 @@ export const useGetOrderListQuery = (queryParams : GetOrdersQueryParamsType) => 
     })
 }
 
-export const useGetOrderDetailQuery = (orderId: number, enabled?: boolean) => {
+export const useGetOrderDetailQuery = ({ id, enabled }: {id: number, enabled?: boolean}) => {
     return useQuery({
-        queryFn: () => orderApiRequest.getOrderDetail(orderId),
-        queryKey: ['orders', orderId],
+        queryFn: () => orderApiRequest.getOrderDetail(id),
+        queryKey: ['orders', id],
         enabled
     })
 }
