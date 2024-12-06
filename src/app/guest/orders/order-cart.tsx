@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { OrderStatus } from "@/constants/type";
 import { toast } from "@/hooks/use-toast";
 import socket from "@/lib/socket";
 import { formatCurrency, getVietnameseOrderStatus } from "@/lib/utils";
@@ -13,10 +14,39 @@ const OrdersCart = () => {
   const { data, refetch } = useGuestGetOrderListQuery();
   const orders = useMemo(() => data?.payload.data ?? [], [data]);
 
-  const totalPrice = useMemo(() => {
+  const { waitingForPaying, paid } = useMemo(() => {
+    
     return orders.reduce((result, order) => {
-      return result + order.dishSnapshot.price * order.quantity;
-    }, 0);
+      if (order.status === OrderStatus.Delivered || order.status === OrderStatus.Processing || order.status === OrderStatus.Pending) {
+        return {
+          ...result,
+          waitingForPaying: {
+            price: result.waitingForPaying.price + order.dishSnapshot.price * order.quantity,
+            quantity: result.waitingForPaying.quantity + order.quantity
+          }
+        }
+      }
+      if (order.status === OrderStatus.Paid) {
+        return {
+          ...result,
+          paid: {
+            price: result.paid.price + order.dishSnapshot.price * order.quantity,
+            quantity: result.paid.quantity + order.quantity
+          }
+        }
+      }
+
+      return result
+    }, {
+      waitingForPaying: {
+        price: 0,
+        quantity: 0
+      },
+      paid: {
+        price: 0,
+        quantity: 0
+      }
+    });
   }, [orders]);
 
   useEffect(() => {
@@ -74,10 +104,16 @@ const OrdersCart = () => {
           </div>
         </div>
       ))}
+      {paid.quantity !== 0 && <div className="sticky bottom-0">
+        <div className="w-full justify-between text-xl font-semibold">
+          <span className="mr-3">Đơn đã thanh toán · {paid.quantity} món</span>
+          <span>{formatCurrency(paid.price)}</span>
+        </div>
+      </div>}
       <div className="sticky bottom-0">
         <div className="w-full justify-between text-xl font-semibold">
-          <span className="mr-3">Giá tiền · {orders.length} món</span>
-          <span>{formatCurrency(totalPrice)}</span>
+          <span className="mr-3">Đơn chưa thanh toán · {waitingForPaying.quantity} món</span>
+          <span>{formatCurrency(waitingForPaying.price)}</span>
         </div>
       </div>
     </>
