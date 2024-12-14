@@ -73,7 +73,7 @@ export const removeTokensFromLS = () => {
   isBrowser && localStorage.removeItem('refreshToken')
 }
 
-export const checkAndRefreshToken = async (param?: {onError?: () => void, onSuccess?: () => void}) => {
+export const checkAndRefreshToken = async (param?: {onError?: () => void, onSuccess?: () => void, force?: boolean}) => {
   const accessToken = getAccessTokenFromLS()
   const refreshToken = getRefreshTokenFromLS()
   if (!accessToken || !refreshToken) {
@@ -86,15 +86,16 @@ export const checkAndRefreshToken = async (param?: {onError?: () => void, onSucc
     removeTokensFromLS()
     return param?.onError && param.onError()
   }
-  if (decodeAccessToken.exp - now < (decodeAccessToken.exp - decodeAccessToken.iat) / 3) {
+  if (param?.force || (decodeAccessToken.exp - now < (decodeAccessToken.exp - decodeAccessToken.iat) / 3)) {
       try {
           const role = decodeRefreshToken.role
           const res = role === Role.Guest ? await guestApiRequest.refreshToken() : await authApiRequest.refreshToken()
           setAccessTokenToLS(res.payload.data.accessToken)
           setRefreshTokenToLS(res.payload.data.refreshToken)
-          param?.onSuccess && param.onSuccess()
+          param?.onSuccess?.()
       } catch (error) {
-        param?.onError && param.onError()
+        console.log(error);
+        param?.onError?.()
       }
   }
 }

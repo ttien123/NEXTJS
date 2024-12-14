@@ -1,4 +1,5 @@
 'use client';
+import socket from '@/lib/socket';
 import { checkAndRefreshToken } from '@/lib/utils';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -13,18 +14,35 @@ const RefreshToken = () => {
         }
         let interval: any = null;
         
-        checkAndRefreshToken({ onError: () => {
-            clearInterval(interval)
-            router.push('/login')
-        }})
-
+        const onRefreshToken = (force?: boolean) => checkAndRefreshToken({ 
+            onError: () => {
+                clearInterval(interval)
+                router.push('/login')
+            },
+            force
+            })
+        onRefreshToken()
         const TIMEOUT = 1000
-        interval = setInterval(() =>checkAndRefreshToken({ onError: () => {
-            clearInterval(interval)
-            router.push('/login')
-        }}), TIMEOUT)
+        interval = setInterval(onRefreshToken, TIMEOUT)
+
+        if (socket.connected) {
+            onConnect();
+          }
+      
+        function onConnect() {}
+        function onDisconnect() {}
+        function onRefreshTokenSocket() {
+            onRefreshToken(true)
+        }
+
+        socket.on("connect", onConnect);
+        socket.on("disconnect", onDisconnect);
+        socket.on("refresh-token", onRefreshTokenSocket);
 
         return () => {
+            socket.off("connect", onConnect);
+            socket.on("refresh-token", onRefreshTokenSocket);
+            socket.off("disconnect", onDisconnect);
             clearInterval(interval)
         }
     }, [pathname, router])
