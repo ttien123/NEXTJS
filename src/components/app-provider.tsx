@@ -9,6 +9,7 @@ import RefreshToken from './refresh-token'
 import { decodeToken, generateSocketInstance, getAccessTokenFromLS, removeTokensFromLS } from '@/lib/utils'
 import type { Socket } from 'socket.io-client'
 import { RoleType } from '@/types/jwt.types'
+import ListenLogoutSocket from './listen-logout-socket'
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -61,6 +62,7 @@ export default function AppProvider({children} : {children: React.ReactNode}) {
       <QueryClientProvider client={queryClient}>
           {children}
           <RefreshToken />
+          <ListenLogoutSocket />
           <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </AppContext.Provider>
