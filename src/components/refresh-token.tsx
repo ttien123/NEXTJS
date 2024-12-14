@@ -1,13 +1,14 @@
 'use client';
-import socket from '@/lib/socket';
 import { checkAndRefreshToken } from '@/lib/utils';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { useAppContext } from './app-provider';
 
 const UNAUTHENTICATED_PATH = ['/login', '/logout', '/refresh-token'];
 const RefreshToken = () => {
     const pathname = usePathname();
     const router = useRouter();
+    const { socket, disconnectSocket } = useAppContext()
     useEffect(() => {
         if (UNAUTHENTICATED_PATH.includes(pathname)) {
             return
@@ -17,6 +18,7 @@ const RefreshToken = () => {
         const onRefreshToken = (force?: boolean) => checkAndRefreshToken({ 
             onError: () => {
                 clearInterval(interval)
+                disconnectSocket()
                 router.push('/login')
             },
             force
@@ -25,7 +27,7 @@ const RefreshToken = () => {
         const TIMEOUT = 1000
         interval = setInterval(onRefreshToken, TIMEOUT)
 
-        if (socket.connected) {
+        if (socket?.connected) {
             onConnect();
           }
       
@@ -35,17 +37,17 @@ const RefreshToken = () => {
             onRefreshToken(true)
         }
 
-        socket.on("connect", onConnect);
-        socket.on("disconnect", onDisconnect);
-        socket.on("refresh-token", onRefreshTokenSocket);
+        socket?.on("connect", onConnect);
+        socket?.on("disconnect", onDisconnect);
+        socket?.on("refresh-token", onRefreshTokenSocket);
 
         return () => {
-            socket.off("connect", onConnect);
-            socket.on("refresh-token", onRefreshTokenSocket);
-            socket.off("disconnect", onDisconnect);
+            socket?.off("connect", onConnect);
+            socket?.on("refresh-token", onRefreshTokenSocket);
+            socket?.off("disconnect", onDisconnect);
             clearInterval(interval)
         }
-    }, [pathname, router])
+    }, [pathname, router, socket, disconnectSocket])
   return (
     null
   );

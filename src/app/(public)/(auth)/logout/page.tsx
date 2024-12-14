@@ -8,7 +8,7 @@ import React, { Suspense, useEffect, useRef } from 'react';
 const Logout = () => {
     const { mutateAsync } = useLogoutMutation()
     const router = useRouter()
-    const { setRole } = useAppContext()
+    const { setRole, disconnectSocket } = useAppContext()
     const searchParams = useSearchParams()
     const refreshTokenFromUrl = searchParams.get('refreshToken')
     const accessTokenFromUrl = searchParams.get('accessToken')
@@ -24,13 +24,14 @@ const Logout = () => {
                     ref.current = null
                 })
                 setRole()
+                disconnectSocket()
                 router.push('/login')
             })
         } else {
             router.push('/')
         }
         
-    }, [mutateAsync, router, accessTokenFromUrl, refreshTokenFromUrl, setRole])
+    }, [mutateAsync, router, accessTokenFromUrl, refreshTokenFromUrl, setRole, disconnectSocket])
     
     return (
         <div>

@@ -1,9 +1,9 @@
 "use client";
 
+import { useAppContext } from "@/components/app-provider";
 import { Badge } from "@/components/ui/badge";
 import { OrderStatus } from "@/constants/type";
 import { toast } from "@/hooks/use-toast";
-import socket from "@/lib/socket";
 import { formatCurrency, getVietnameseOrderStatus } from "@/lib/utils";
 import { useGuestGetOrderListQuery } from "@/queries/useGuest";
 import { PayGuestOrdersResType, UpdateOrderResType } from "@/schemaValidations/order.schema";
@@ -13,7 +13,7 @@ import { useEffect, useMemo } from "react";
 const OrdersCart = () => {
   const { data, refetch } = useGuestGetOrderListQuery();
   const orders = useMemo(() => data?.payload.data ?? [], [data]);
-
+  const { socket } = useAppContext()
   const { waitingForPaying, paid } = useMemo(() => {
     
     return orders.reduce((result, order) => {
@@ -50,7 +50,7 @@ const OrdersCart = () => {
   }, [orders]);
 
   useEffect(() => {
-    if (socket.connected) {
+    if (socket?.connected) {
       onConnect();
     }
 
@@ -73,18 +73,18 @@ const OrdersCart = () => {
       refetch()
   }
 
-    socket.on("update-order", onUpdateOrder);
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("payment", onPayment);
+    socket?.on("update-order", onUpdateOrder);
+    socket?.on("connect", onConnect);
+    socket?.on("disconnect", onDisconnect);
+    socket?.on("payment", onPayment);
 
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("update-order", onUpdateOrder);
-      socket.off("disconnect", onDisconnect);
-      socket.off("payment", onPayment);
+      socket?.off("connect", onConnect);
+      socket?.off("update-order", onUpdateOrder);
+      socket?.off("disconnect", onDisconnect);
+      socket?.off("payment", onPayment);
     };
-  }, [refetch]);
+  }, [refetch, socket]);
   return (
     <>
       {orders.map((order, index) => (
