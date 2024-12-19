@@ -1,7 +1,7 @@
 import { useLogoutMutation } from "@/queries/useAuth";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAppContext } from "./app-provider";
+import { useAppStore } from "./app-provider";
 import { handleErrorApi } from "@/lib/utils";
 const UNAUTHENTICATED_PATH = ['/login', '/logout', '/refresh-token'];
 
@@ -9,7 +9,9 @@ const ListenLogoutSocket = () => {
     const pathname = usePathname();
     const router  = useRouter();
     const logoutMutation = useLogoutMutation()
-    const {setRole, disconnectSocket, socket} = useAppContext()
+    const setRole = useAppStore(state => state.setRole)
+    const disconnectSocket = useAppStore(state => state.disconnectSocket)
+    const socket = useAppStore(state => state.socket)
     
     useEffect(() => { 
         if (UNAUTHENTICATED_PATH.includes(pathname)) {
