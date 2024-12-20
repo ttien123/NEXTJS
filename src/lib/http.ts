@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import envConfig from '@/config'
 import { getAccessTokenFromLS, normalizePath, removeTokensFromLS, setAccessTokenToLS, setRefreshTokenToLS } from '@/lib/utils'
 import { LoginResType } from '@/schemaValidations/auth.schema'

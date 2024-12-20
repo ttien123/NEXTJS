@@ -43,7 +43,7 @@ const OauthPage = () => {
                 count.current++
             }
         }
-    }, [accessToken, refreshToken, setRole, setSocket, message])
+    }, [accessToken, refreshToken, setRole, setSocket, message, mutateAsync, router])
     return (
         null
     );
