@@ -1,5 +1,10 @@
 {
     "HomePage": {
         "title": "Nhà hàng Big Boy"
+    },
+    "SwitchLanguage": {
+        "title": "Chuyển ngôn ngữ",
+        "en": "Tiếng Anh",
+        "vi": "Tiếng Việt"
     }
 }
