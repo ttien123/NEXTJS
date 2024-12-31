@@ -1,26 +1,29 @@
 'use client'
 
 import * as React from "react"
-
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 import { useLocale, useTranslations } from "next-intl"
 import { Locale, locales } from "@/i18n/config"
-import { setUserLocale } from "@/services/locale"
+import { usePathname, useRouter } from "@/i18n/routing"
 
 export function SwitchLanguage() {
     const t = useTranslations('SwitchLanguage')
     const locale = useLocale()
+    const pathname = usePathname()
+    const router = useRouter()
     return (
         <Select value={locale} onValueChange={(value) => {
-            setUserLocale(value as Locale)
+            router.replace(pathname, {
+                locale: value as Locale
+            })
+            router.refresh()
         }}>
             <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder={t('title')} />
