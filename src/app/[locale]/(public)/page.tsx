@@ -2,8 +2,16 @@ import dishApiRequest from '@/apiRequests/dish'
 import { DishListResType } from '@/schemaValidations/dish.schema'
 import Image from 'next/image'
 import { Link } from '@/i18n/routing'
-import { getTranslations } from'next-intl/server'
-export default async function Home() {
+import { getTranslations, setRequestLocale } from'next-intl/server'
+
+export default async function Home(props: {
+  params: Promise<{ locale: string }>
+}) {
+  const params = await props.params
+
+  const { locale } = params
+
+  setRequestLocale(locale)
   const t = await getTranslations('HomePage')
   let dishList: DishListResType['data'] = []
   try {
