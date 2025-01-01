@@ -12,7 +12,7 @@ import guestApiRequest from "@/apiRequests/guest"
 import { format } from "date-fns"
 import { BookX, CookingPot, HandCoins, Loader, Truck } from 'lucide-react'
 import { io } from "socket.io-client"
-
+import slugify from "slugify"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -198,4 +198,12 @@ export const wrapServerApi = async <T>(fn: () => Promise<T>) => {
     }
   }
   return result
+}
+
+export const generateSlugUrl = ({name, id}: {name: string, id: number}) => {
+  return `${slugify(name)}-i.${id}`
+}
+
+export const getIdFromSlugUrl = (slugUrl: string) => {
+  return Number(slugUrl.split('-i.')[1])
 }

@@ -3,11 +3,12 @@ import { DishListResType } from '@/schemaValidations/dish.schema'
 import Image from 'next/image'
 import { Link } from '@/i18n/routing'
 import { getTranslations, setRequestLocale } from'next-intl/server'
+import { generateSlugUrl } from '@/lib/utils'
 
 export default async function Home(props: {
-  params: Promise<{ locale: string }>
+  params: { locale: string }
 }) {
-  const params = await props.params
+  const params = props.params
 
   const { locale } = params
 
@@ -42,7 +43,7 @@ export default async function Home(props: {
         <h2 className='text-center text-2xl font-bold'>Đa dạng các món ăn</h2>
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-10'>
           {dishList.map((dish) => (
-              <Link href={`/dishes/${dish.id}`} className='flex gap-4 w' key={dish.id}>
+              <Link href={`/dishes/${generateSlugUrl({ name: dish.name, id: dish.id })}`} className='flex gap-4 w' key={dish.id}>
                 <div className='flex-shrink-0'>
                   <Image
                     width={150}
