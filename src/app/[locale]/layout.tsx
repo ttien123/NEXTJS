@@ -6,17 +6,37 @@ import { Toaster } from '@/components/ui/toaster'
 import { ThemeProvider } from '@/components/theme-provider'
 import AppProvider from '@/components/app-provider'
 import {NextIntlClientProvider} from 'next-intl';
-import {getMessages, setRequestLocale} from 'next-intl/server';
+import {getMessages, getTranslations, setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
+import { Locale } from '@/i18n/config'
 
 const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans'
 })
-export const metadata: Metadata = {
-  title: 'Big Boy Restaurant',
-  description: 'The best restaurant in the world'
+// export const metadata: Metadata = {
+//   title: 'Big Boy Restaurant',
+//   description: 'The best restaurant in the world'
+// }
+
+export async function generateMetadata(props: {
+  params: { locale: Locale }
+}) {
+  const params = props.params
+  const { locale } = params
+
+  const t = await getTranslations({ locale, namespace: 'Brand' })
+  return {
+    title: t('title'),
+    description: t('defaultTitle'),
+    // openGraph: {
+    //   ...baseOpenGraph
+    // }
+    // other: {
+    //   'google-site-verification': 'KKr5Sgn6rrXntMUp1nDIoQR7mJQujE4BExrlgcFvGTg'
+    // }
+  }
 }
 
 export function generateStaticParams() {

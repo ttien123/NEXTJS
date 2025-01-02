@@ -15,6 +15,7 @@ import { useEffect } from 'react'
 import { useAppStore } from '@/components/app-provider'
 import envConfig from '@/config'
 import { Link } from '@/i18n/routing'
+import { useTranslations } from 'next-intl'
 
 const getOauthGoogleUrl = () => {
   const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
@@ -35,6 +36,8 @@ const getOauthGoogleUrl = () => {
 const googleOauthUrl = getOauthGoogleUrl()
 
 export default function LoginForm() {
+  const t = useTranslations('Login')
+  const errorMessageT = useTranslations('ErrorMessage')
   const loginMutation = useLoginMutation()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -76,8 +79,8 @@ export default function LoginForm() {
   return (
     <Card className='mx-auto max-w-sm'>
       <CardHeader>
-        <CardTitle className='text-2xl'>Đăng nhập</CardTitle>
-        <CardDescription>Nhập email và mật khẩu của bạn để đăng nhập vào hệ thống</CardDescription>
+        <CardTitle className='text-2xl'>{t('title')}</CardTitle>
+        <CardDescription>{t('cardDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -88,12 +91,15 @@ export default function LoginForm() {
               <FormField
                 control={form.control}
                 name='email'
-                render={({ field }) => (
+                render={({ field, formState: { errors } }) => (
                   <FormItem>
                     <div className='grid gap-2'>
                       <Label htmlFor='email'>Email</Label>
                       <Input id='email' type='email' placeholder='m@example.com' required {...field} />
-                      <FormMessage />
+                      <FormMessage>
+                        {Boolean(errors.email?.message) &&
+                          errorMessageT(errors.email?.message as any)}
+                      </FormMessage>
                     </div>
                   </FormItem>
                 )}
@@ -101,14 +107,17 @@ export default function LoginForm() {
               <FormField
                 control={form.control}
                 name='password'
-                render={({ field }) => (
+                render={({ field, formState: { errors } }) => (
                   <FormItem>
                     <div className='grid gap-2'>
                       <div className='flex items-center'>
                         <Label htmlFor='password'>Password</Label>
                       </div>
                       <Input id='password' type='password' required {...field} />
-                      <FormMessage />
+                      <FormMessage>
+                        {Boolean(errors.password?.message) &&
+                          errorMessageT(errors.password?.message as any)}
+                      </FormMessage>
                     </div>
                   </FormItem>
                 )}
