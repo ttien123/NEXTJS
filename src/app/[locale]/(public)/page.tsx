@@ -3,7 +3,24 @@ import { DishListResType } from '@/schemaValidations/dish.schema'
 import Image from 'next/image'
 import { Link } from '@/i18n/routing'
 import { getTranslations, setRequestLocale } from'next-intl/server'
-import { generateSlugUrl } from '@/lib/utils'
+import { generateSlugUrl, htmlToTextForDescription } from '@/lib/utils'
+import { Locale } from '@/i18n/config'
+
+export async function generateMetadata(props: {
+  params: { locale: Locale }
+}) {
+  const params = props.params
+
+  const { locale } = params
+
+  const t = await getTranslations({ locale, namespace: 'HomePage' })
+
+  return {
+    title: t('title'),
+    description: htmlToTextForDescription(t('description')),
+  }
+}
+
 
 export default async function Home(props: {
   params: { locale: string }
