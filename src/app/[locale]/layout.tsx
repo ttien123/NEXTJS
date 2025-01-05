@@ -11,6 +11,8 @@ import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
 import { Locale } from '@/i18n/config'
 import NextTopLoader from 'nextjs-toploader'
+import Footer from '@/components/footer'
+
 const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans'
@@ -64,6 +66,7 @@ export default async function RootLayout({
           <AppProvider>
             <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
               {children}
+              <Footer />
               <Toaster />
             </ThemeProvider>
           </AppProvider>
