@@ -10,11 +10,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useLoginMutation } from '@/queries/useAuth'
 import { toast } from '@/hooks/use-toast'
 import { generateSocketInstance, handleErrorApi } from '@/lib/utils'
-import { useRouter, useSearchParams } from 'next/navigation'
+import {  useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useAppStore } from '@/components/app-provider'
 import envConfig from '@/config'
-import { Link } from '@/i18n/routing'
+import { Link, useRouter } from '@/i18n/routing'
 import { useTranslations } from 'next-intl'
 
 const getOauthGoogleUrl = () => {
@@ -66,7 +66,7 @@ export default function LoginForm() {
         description: result.payload.message
       })
       setRole(result.payload.data.account.role)
-      router.push('/')
+      router.push('/manage/dashboard')
       setSocket(generateSocketInstance(result.payload.data.accessToken))
     } catch (error) {
       handleErrorApi({
